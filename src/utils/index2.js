@@ -151,14 +151,43 @@ export class DateUtils {
   }
 
   updateDateBounds() {
-    this.outRanges = this.outRanges.map(r => ({
-      from: r.from + 1,
-      to: r.to - 1
-    }));
+    this.outRanges = this.outRanges.map((r, index) => {
+      const f = new Date(r.from);
+      const t = new Date(r.to);
+      f.setDate(f.getDate() + 1);
+      t.setDate(t.getDate() - 1);
+
+      if (index === 0) {
+        f.setDate(f.getDate() - 1);
+      }
+      if (index === this.outRanges.length - 1) {
+        t.setDate(t.getDate() + 1);
+      }
+      return {
+        from: f.getTime(),
+        to: t.getTime()
+      };
+    });
     this.outRanges = this.outRanges.filter(r => r.from <= r.to);
   }
 
   get() {
     return this.outRanges;
+  }
+
+  getShortDates() {
+    this.dateRanges = this.outRanges.map(it => {
+      const f = new Date(it.from);
+      const t = new Date(it.to);
+      return {
+        from: `${f.getFullYear()}.${('0' + (f.getMonth() + 1)).slice(-2)}.${(
+          '0' + f.getDate()
+        ).slice(-2)}`,
+        to: `${t.getFullYear()}.${('0' + (t.getMonth() + 1)).slice(-2)}.${(
+          '0' + t.getDate()
+        ).slice(-2)}`
+      };
+    });
+    return this.dateRanges;
   }
 }
